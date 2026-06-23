@@ -1,58 +1,43 @@
-import { supabase, supabaseAdmin } from './supabase';
+import { supabase } from './supabase';
 
 export const PROFIT_RATE = 0.8;
 
-export type OrderStatus = 'success' | 'error';
-
-export type ServiceType = 'cleaning' | 'assembly' | 'plumbing';
+export type OrderStatus = 'new' | 'accepted' | 'completed' | 'cancelled';
 
 export type Order = {
-  id: string | number;
+  id: string;
   coords: [number, number];
   status: OrderStatus;
-  price: number;
   title: string;
-  service: ServiceType;
+  service_name: string;
   address: string;
-};
-
-export type DbOrder = {
-  id: string;
-  created_at: string;
-  title: string;
-  service: string;
-  address: string;
-  price: number;
-  lat: number;
-  lng: number;
-  status: string;
   client_name: string;
   client_phone: string;
-  client_comment: string;
-  master_id: string;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
 };
 
-function dbOrderToOrder(db: DbOrder): Order {
+function dbRowToOrder(row: Record<string, unknown>): Order {
   return {
-    id: db.id,
-    coords: [db.lat, db.lng],
-    status: db.status === 'completed' ? 'success' : 'error',
-    price: db.price,
-    title: db.title,
-    service: db.service as ServiceType,
-    address: db.address,
+    id: row.id as string,
+    coords: [(row.lat as number) || 55.7558, (row.lng as number) || 37.6173],
+    status: (row.status as OrderStatus) || 'new',
+    title: (row.service_name as string) || '',
+    service_name: (row.service_name as string) || '',
+    address: (row.address as string) || '',
+    client_name: (row.client_name as string) || '',
+    client_phone: (row.client_phone as string) || '',
+    metadata: (row.metadata as Record<string, unknown>) || null,
+    created_at: (row.created_at as string) || '',
   };
 }
 
-/** Profit = Total × 0.8 */
 export function calcProfit(total: number) {
   return Math.round(total * PROFIT_RATE);
 }
 
 export function calcMasterProfit(orders: Order[]) {
-  return orders
-    .filter((o) => o.status === 'success')
-    .reduce((sum, o) => sum + calcProfit(o.price), 0);
+  return orders.filter((o) => o.status === 'completed').length;
 }
 
 export async function fetchOrdersFromSupabase(): Promise<Order[]> {
@@ -67,32 +52,28 @@ export async function fetchOrdersFromSupabase(): Promise<Order[]> {
     return [];
   }
 
-  return data.map(dbOrderToOrder);
+  return data.map(dbRowToOrder);
 }
 
 export async function createOrderInSupabase(payload: {
-  title: string;
-  service?: string;
-  address?: string;
-  price?: number;
-  lat?: number;
-  lng?: number;
+  service_name: string;
   client_name?: string;
   client_phone?: string;
-  client_comment?: string;
+  address?: string;
+  lat?: number;
+  lng?: number;
+  metadata?: Record<string, unknown>;
 }) {
   const { data, error } = await supabase
     .from('orders')
     .insert({
-      title: payload.title,
-      service: payload.service || 'cleaning',
-      address: payload.address || '',
-      price: payload.price || 0,
-      lat: payload.lat || 55.7558,
-      lng: payload.lng || 37.6173,
+      service_name: payload.service_name,
       client_name: payload.client_name || '',
       client_phone: payload.client_phone || '',
-      client_comment: payload.client_comment || '',
+      address: payload.address || '',
+      lat: payload.lat || 55.7558,
+      lng: payload.lng || 37.6173,
+      metadata: payload.metadata || null,
       status: 'new',
     })
     .select()
@@ -103,7 +84,7 @@ export async function createOrderInSupabase(payload: {
     return null;
   }
 
-  return data as DbOrder;
+  return data;
 }
 
 export async function updateOrderStatus(orderId: string, status: string) {
@@ -116,88 +97,3 @@ export async function updateOrderStatus(orderId: string, status: string) {
     console.error('[BroVerse] Supabase update error:', error);
   }
 }
-
-/** Каталог для /orders — 3 реальных услуги */
-export const CATALOG_ORDERS: Order[] = [
-  {
-    id: 101,
-    coords: [55.7278, 37.5747],
-    status: 'success',
-    price: 12000,
-    title: 'Химчистка дивана',
-    service: 'cleaning',
-    address: 'Москва, ул. Новый Арбат, 15',
-  },
-  {
-    id: 102,
-    coords: [55.7494, 37.5356],
-    status: 'success',
-    price: 8500,
-    title: 'Сборка шкафа',
-    service: 'assembly',
-    address: 'Москва, Кутузовский просп., 36',
-  },
-  {
-    id: 103,
-    coords: [55.7539, 37.6208],
-    status: 'success',
-    price: 15000,
-    title: 'Ремонт сантехники',
-    service: 'plumbing',
-    address: 'Москва, ул. Мясницкая, 24',
-  },
-];
-
-/** Базовые точки на карте: зелёные + 1 красный Issue */
-export const BASE_MAP_ORDERS: Order[] = [
-  {
-    id: 1,
-    coords: [55.7644, 37.6057],
-    status: 'success',
-    price: 12000,
-    title: 'Химчистка дивана',
-    service: 'cleaning',
-    address: 'Москва, ул. Маросейка, 11',
-  },
-  {
-    id: 2,
-    coords: [55.7494, 37.5356],
-    status: 'success',
-    price: 8500,
-    title: 'Сборка шкафа',
-    service: 'assembly',
-    address: 'Москва, Кутузовский просп., 36',
-  },
-  {
-    id: 3,
-    coords: [55.7539, 37.6208],
-    status: 'success',
-    price: 15000,
-    title: 'Ремонт сантехники',
-    service: 'plumbing',
-    address: 'Москва, ул. Мясницкая, 24',
-  },
-  {
-    id: 900,
-    coords: [55.7411, 37.6202],
-    status: 'error',
-    price: 3500,
-    title: 'Инцидент — срыв сроков',
-    service: 'cleaning',
-    address: 'Москва, ул. Пятницкая, 2/38',
-  },
-];
-
-export function getFirstErrorOrder(orders: Order[]): Order | undefined {
-  return orders.find((o) => o.status === 'error');
-}
-
-export type ClientOrderPayload = {
-  title?: string;
-  price?: number;
-  service?: ServiceType;
-  address?: string;
-  domain?: string;
-  brand?: string;
-  tagline?: string;
-};
