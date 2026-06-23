@@ -103,8 +103,8 @@ function Home() {
                 <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 8 }}>
                   <p style={{ margin: '1px 0' }}>📞 {lead.client_phone || '—'}</p>
                   <p style={{ margin: '1px 0' }}>📍 {lead.address || '—'}</p>
-                  {lead.metadata?.description && (
-                    <p style={{ margin: '4px 0 0', color: '#9ca3af', fontSize: 12 }}>{String(lead.metadata.description)}</p>
+                  {((lead.metadata as any)?.description) && (
+                    <p style={{ margin: '4px 0 0', color: '#9ca3af', fontSize: 12 }}>{String((lead.metadata as any).description)}</p>
                   )}
                 </div>
                 <div style={{ fontSize: 11, color: '#d1d5db', marginBottom: 8 }}>

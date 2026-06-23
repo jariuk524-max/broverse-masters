@@ -6,15 +6,13 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     const order = await createOrderInSupabase({
-      title: body.title || body.service || 'Новый заказ',
-      service: body.service || 'cleaning',
+      service_name: body.service_name || body.title || 'Новый заказ',
       address: body.address || '',
-      price: body.price || 0,
       lat: body.lat || 55.7558 + (Math.random() - 0.5) * 0.04,
       lng: body.lng || 37.6173 + (Math.random() - 0.5) * 0.04,
-      client_name: body.name || '',
-      client_phone: body.phone || '',
-      client_comment: body.comment || '',
+      client_name: body.client_name || body.name || '',
+      client_phone: body.client_phone || body.phone || '',
+      metadata: body.metadata || null,
     });
 
     if (!order) {
