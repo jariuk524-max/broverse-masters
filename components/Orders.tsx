@@ -68,7 +68,7 @@ export default function Orders() {
       </div>
 
       {/* Stats Card */}
-      <div className="rounded-[24px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <div className="rounded-[40px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-[13px] text-gray-400">Общая прибыль</p>
