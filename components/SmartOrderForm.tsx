@@ -109,7 +109,7 @@ export default function SmartOrderForm({ isOpen, onClose, domainId, price }: Sma
                   <div className="grid grid-cols-2 gap-2">
                     {Object.entries(SERVICES).map(([id, s]) => (
                       <button key={id} type="button" onClick={() => { setService(id); setStep(2); }}
-                        className="flex items-center gap-3 p-3 rounded-[20px] bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-left">
+                        className="flex items-center gap-3 p-3 rounded-[40px] bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-left">
                         <span className="text-xl">{s.icon}</span>
                         <div>
                           <p className="text-xs font-bold">{s.name}</p>
@@ -128,7 +128,7 @@ export default function SmartOrderForm({ isOpen, onClose, domainId, price }: Sma
                   <div className="grid grid-cols-2 gap-2 max-h-[280px] overflow-y-auto scrollbar-none">
                     {CITIES.map((c) => (
                       <button key={c.id} type="button" onClick={() => { setCity(c.id); setStep(3); }}
-                        className={`flex items-center gap-3 p-3 rounded-[20px] border transition-all text-left ${
+                        className={`flex items-center gap-3 p-3 rounded-[40px] border transition-all text-left ${
                           city === c.id ? 'bg-white/15 border-white/30' : 'bg-white/5 border-white/10 hover:bg-white/10'
                         }`}>
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
@@ -146,7 +146,7 @@ export default function SmartOrderForm({ isOpen, onClose, domainId, price }: Sma
                 <div>
                   <h3 className="text-lg font-black mb-1">Прикрепи фото</h3>
                   <p className="text-[11px] text-white/40 mb-4">{svc?.name} — для точной оценки</p>
-                  <label className="block border-2 border-dashed border-white/20 rounded-[24px] h-28 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-all">
+                  <label className="block border-2 border-dashed border-white/20 rounded-[40px] h-28 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-all">
                     {photo ? (
                       <div className="flex items-center gap-2 text-emerald-400">
                         <Check size={18} />
