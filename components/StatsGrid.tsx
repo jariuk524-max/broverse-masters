@@ -98,7 +98,7 @@ export default function StatsGrid({
 
       {/* Раскрытая карточка — Финансы */}
       {expanded === 'profit' && (
-        <div className="mx-auto max-w-sm bg-white rounded-[20px] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-white/40">
+        <div className="mx-auto max-w-sm bg-white rounded-[40px] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-white/10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-emerald-500/10">
@@ -139,7 +139,7 @@ export default function StatsGrid({
 
       {/* Раскрытая карточка — Issues */}
       {expanded === 'issues' && (
-        <div className="mx-auto max-w-sm bg-white rounded-[20px] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-white/40">
+        <div className="mx-auto max-w-sm bg-white rounded-[40px] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-white/10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-red-500/10">
@@ -177,7 +177,7 @@ export default function StatsGrid({
 
       {/* Раскрытая карточка — Ресурсы */}
       {expanded === 'resources' && (
-        <div className="mx-auto max-w-sm bg-white rounded-[20px] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-white/40">
+        <div className="mx-auto max-w-sm bg-white rounded-[40px] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-white/10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-blue-500/10">
