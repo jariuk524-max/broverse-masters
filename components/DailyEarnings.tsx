@@ -13,7 +13,7 @@ export default function DailyEarnings({ profit, onTakeOrder }: DailyEarningsProp
 
   if (expanded) {
     return (
-      <div className="bg-white/95 backdrop-blur-md rounded-[20px] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-white/40 max-w-[260px]">
+      <div className="bg-white/5 backdrop-blur-3xl rounded-[40px] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-white/10 max-w-[260px]">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-emerald-500">
