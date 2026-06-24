@@ -8,7 +8,7 @@ import ShiftToggle from '../components/ShiftToggle';
 import OrderBar from '../components/OrderBar';
 import Orders from '../components/Orders';
 import TabBar, { type TabId } from '../components/TabBar';
-import { LeadsProvider, useLeads, SOURCE_COLORS, type Lead } from '@/lib/leads-context';
+import { LeadsProvider, useLeads, SOURCE_COLORS } from '@/lib/leads-context';
 
 const MapView = dynamic(() => import('../components/MapView'), {
   ssr: false,
@@ -36,24 +36,16 @@ type Order = {
 
 const PROFIT_RATE = 0.8;
 
-const SOURCE_MAP: Record<string, OrderSource> = {
-  BroWash: 'Брокер', BroMove: 'Телефон', BroFrame: 'Сайт',
-  BroBuild: 'Telegram', BroRent: 'Брокер', BroCare: 'Телефон',
-};
-
-function leadToOrder(lead: Lead): Order {
-  return {
-    id: typeof lead.id === 'string' ? parseInt(lead.id, 10) || 0 : lead.id,
-    coords: lead.coords || [55.7558, 37.6173],
-    status: lead.status === 'completed' ? 'success' : lead.status === 'new' || lead.status === 'accepted' ? 'error' : 'error',
-    price: lead.price || 0,
-    title: lead.title || 'Заказ',
-    address: lead.address || '',
-    source: SOURCE_MAP[lead.source] || 'Брокер',
-    dist: '',
-    date: lead.timestamp ? new Date(lead.timestamp).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-  };
-}
+const ORDERS: Order[] = [
+  { id: 1, coords: [55.7644, 37.6057], status: 'success', price: 12000, title: 'Химчистка дивана', address: 'ул. Маросейка, 11', source: 'Брокер', dist: '2.1 км', date: '2026-06-14' },
+  { id: 2, coords: [55.7494, 37.5356], status: 'success', price: 8500, title: 'Сборка шкафа', address: 'Кутузовский просп., 36', source: 'Телефон', dist: '4.8 км', date: '2026-06-13' },
+  { id: 3, coords: [55.7539, 37.6208], status: 'success', price: 15000, title: 'Ремонт сантехники', address: 'ул. Мясницкая, 24', source: 'Сайт', dist: '1.3 км', date: '2026-06-12' },
+  { id: 4, coords: [55.7278, 37.5747], status: 'success', price: 9200, title: 'Уборка квартиры', address: 'ул. Новый Арбат, 15', source: 'Telegram', dist: '3.5 км', date: '2026-06-08' },
+  { id: 5, coords: [55.7680, 37.5870], status: 'success', price: 6800, title: 'Мытьё окон', address: 'Сретенка, 4/2', source: 'Брокер', dist: '1.7 км', date: '2026-06-07' },
+  { id: 6, coords: [55.7500, 37.6100], status: 'success', price: 11000, title: 'Ремонт замков', address: 'Тверская ул., 18', source: 'Брокер', dist: '2.5 км', date: '2026-06-06' },
+  { id: 7, coords: [55.7400, 37.5800], status: 'success', price: 7500, title: 'Поклейка обоев', address: 'Ленинский просп., 42', source: 'Телефон', dist: '5.1 км', date: '2026-06-05' },
+  { id: 900, coords: [55.7411, 37.6202], status: 'error', price: 3500, title: 'Инцидент — срыв сроков', address: 'ул. Пятницкая, 2/38', source: 'Телефон', dist: '0.8 км', date: '2026-06-11' },
+];
 
 function StatusBadge({ status }: { status: OrderStatus }) {
   return (
@@ -180,7 +172,7 @@ function ProfileScreen() {
     <div className="absolute inset-x-0 bottom-14 top-0 z-20 overflow-y-auto bg-gradient-to-b from-[#F2F2F7] via-[#E8E8ED] to-[#F2F2F7]">
       <div className="px-4 pb-28 pt-20">
         {/* Прогресс заполнения */}
-        <section className="mb-4 overflow-hidden rounded-[20px] border border-white/60 bg-white/50 p-4 shadow-[0_4px_16px_rgba(0,0,0,0.03)] backdrop-blur-xl">
+        <section className="mb-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-4 shadow-[0_4px_16px_rgba(0,0,0,0.03)] backdrop-blur-3xl">
           <div className="mb-2 flex items-center justify-between">
             <p className="text-[12px] font-bold text-[#8E8E93]">Заполненность профиля</p>
             <p className="text-[12px] font-bold text-[#007AFF]">{completionPercent}%</p>
@@ -199,14 +191,14 @@ function ProfileScreen() {
         </section>
 
         {/* Hero Card */}
-        <section className="relative overflow-hidden rounded-[28px] border border-white/60 bg-white/50 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl">
+        <section className="relative overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] backdrop-blur-3xl">
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gradient-to-br from-[#007AFF]/20 to-[#5856D6]/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-gradient-to-tr from-[#34C759]/15 to-[#30D158]/10 blur-2xl" />
           <div className="relative flex items-center gap-5">
             <button
               type="button"
               onClick={handlePhotoClick}
-              className="group relative flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-[28px] bg-gradient-to-br from-[#1C1C1E] to-[#3A3A3C] text-[36px] font-bold text-white shadow-lg active:scale-95 transition-transform"
+              className="group relative flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-[40px] bg-gradient-to-br from-[#1C1C1E] to-[#3A3A3C] text-[36px] font-bold text-white shadow-lg active:scale-95 transition-transform"
             >
               {photo ? (
                 <img src={photo} alt="Фото профиля" className="h-full w-full object-cover" />
@@ -264,7 +256,7 @@ function ProfileScreen() {
         </section>
 
         {/* Рейтинг */}
-        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
+        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#FF9500]/10">
@@ -290,7 +282,7 @@ function ProfileScreen() {
         </section>
 
         {/* Bio */}
-        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
+        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[#8E8E93]">О себе</h2>
             <button
@@ -325,7 +317,7 @@ function ProfileScreen() {
         </section>
 
         {/* Опыт работы */}
-        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
+        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[#8E8E93]">Стаж работы</h2>
             <button
@@ -362,7 +354,7 @@ function ProfileScreen() {
         </section>
 
         {/* Самозанятый */}
-        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
+        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[#8E8E93]">Самозанятый</h2>
             <button
@@ -443,7 +435,7 @@ function ProfileScreen() {
         </section>
 
         {/* Реквизиты для оплаты */}
-        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
+        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[#8E8E93]">Реквизиты для оплаты</h2>
             <button
@@ -521,9 +513,8 @@ function Home() {
   const [orderTimer, setOrderTimer] = useState<string>('');
   const { leads, activeLead } = useLeads();
 
-  const orders = useMemo(() => leads.map(leadToOrder), [leads]);
-  const weeks = useMemo(() => groupByWeeks(orders), [orders]);
-  const allCompleted = orders.filter(o => o.status === 'success');
+  const weeks = useMemo(() => groupByWeeks(ORDERS), []);
+  const allCompleted = ORDERS.filter(o => o.status === 'success');
 
   const displayOrders = activeWeek === 'all'
     ? allCompleted
@@ -534,16 +525,16 @@ function Home() {
   const displayCommission = displayRevenue - displayProfit;
 
   const stats = useMemo(() => {
-    const success = orders.filter((o) => o.status === 'success');
-    const errors = orders.filter((o) => o.status === 'error');
-    const totalRevenue = orders.reduce((s, o) => s + o.price, 0);
+    const success = ORDERS.filter((o) => o.status === 'success');
+    const errors = ORDERS.filter((o) => o.status === 'error');
+    const totalRevenue = ORDERS.reduce((s, o) => s + o.price, 0);
     const profit = success.reduce((s, o) => s + Math.round(o.price * PROFIT_RATE), 0);
     return {
       profit,
       errorCount: errors.length,
       hosting: Math.round(totalRevenue * (1 - PROFIT_RATE)),
     };
-  }, [orders]);
+  }, []);
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-black font-sans">
@@ -563,7 +554,7 @@ function Home() {
       {/* ЗАКАЗЫ (bottom sheet) */}
       {activeTab === 'orders' && (
         <div className="absolute inset-x-0 bottom-14 top-[40%] z-20 overflow-y-auto rounded-t-[32px] bg-[#F2F2F7] shadow-[0_-12px_40px_rgba(0,0,0,0.15)]">
-          <div className="sticky top-0 z-10 flex justify-center pt-3 pb-2 bg-[#F2F2F7]/90 backdrop-blur-xl rounded-t-[32px]">
+          <div className="sticky top-0 z-10 flex justify-center pt-3 pb-2 bg-[#F2F2F7]/90 backdrop-blur-3xl rounded-t-[32px]">
             <div className="h-1 w-10 rounded-full bg-zinc-300" />
           </div>
           <Orders />
