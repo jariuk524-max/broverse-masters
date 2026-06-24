@@ -108,7 +108,7 @@ export default function ActiveOrderBar() {
 
   return (
     <div className="absolute bottom-20 left-4 right-4 z-30">
-      <div className="bg-white rounded-[20px] shadow-[0_8px_40px_rgba(0,0,0,0.18)] overflow-hidden">
+      <div className="bg-white rounded-[40px] shadow-[0_8px_40px_rgba(0,0,0,0.18)] overflow-hidden">
         {/* Шапка */}
         <div className="px-4 pt-3 pb-2">
           <div className="flex items-center justify-between mb-2">
