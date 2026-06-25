@@ -72,8 +72,6 @@ export async function notifyMastersNewOrder(order: {
     if (!res.ok) {
       const err = await res.text();
       console.error('[masters-bot] Telegram API error:', err);
-    } else {
-      console.log(`[masters-bot] Notification sent for order ${order.id}`);
     }
   } catch (err) {
     console.error('[masters-bot] Failed to send notification:', err);
@@ -122,7 +120,6 @@ export async function setMastersBotWebApp() {
     });
 
     const data = await res.json();
-    console.log('[masters-bot] Menu button set:', data);
     return data;
   } catch (err) {
     console.error('[masters-bot] Failed to set menu button:', err);
@@ -144,5 +141,104 @@ export async function answerCallback(callbackQueryId: string, text?: string) {
     });
   } catch (err) {
     console.error('[masters-bot] Failed to answer callback:', err);
+  }
+}
+
+function getWeekLabel(ts: number): string {
+  const d = new Date(ts);
+  const now = new Date();
+  const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+  if (diffDays < 7) return 'Эта неделя';
+  if (diffDays < 14) return 'Прошлая неделя';
+  if (diffDays < 30) return 'Этот месяц';
+  return 'Ранее';
+}
+
+function formatDate(ts: number): string {
+  const d = new Date(ts);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  return `${day}.${month}`;
+}
+
+const PROFIT_RATE = 0.8;
+
+export async function sendHistoryReport(chatId: number, orders: {
+  id: string;
+  service_name: string;
+  status: string;
+  price: number;
+  created_at: string;
+}[]) {
+  if (!MASTERS_BOT_TOKEN) return;
+
+  const completed = orders
+    .filter((o) => o.status === 'completed' || o.status === 'accepted')
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  if (completed.length === 0) {
+    await fetch(`https://api.telegram.org/bot${MASTERS_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: '📋 <b>История заказов</b>\n\nПока нет выполненных заказов.',
+        parse_mode: 'HTML',
+      }),
+    });
+    return;
+  }
+
+  const totalProfit = completed.reduce((s, o) => s + Math.floor(o.price * PROFIT_RATE), 0);
+  const recent = completed.slice(0, 10);
+
+  const grouped = new Map<string, typeof completed>();
+  for (const order of recent) {
+    const week = getWeekLabel(new Date(order.created_at).getTime());
+    if (!grouped.has(week)) grouped.set(week, []);
+    grouped.get(week)!.push(order);
+  }
+
+  const lines: string[] = [
+    '📋 <b>История заказов</b>',
+    '',
+    `💰 <b>Общий заработок:</b> ${totalProfit.toLocaleString('ru-RU')} ₽`,
+    `✅ <b>Выполнено:</b> ${completed.length} заказов`,
+    '',
+  ];
+
+  for (const [weekLabel, weekOrders] of grouped) {
+    const weekProfit = weekOrders.reduce((s, o) => s + Math.floor(o.price * PROFIT_RATE), 0);
+    lines.push(`<b>📅 ${weekLabel}</b> — ${weekProfit.toLocaleString('ru-RU')} ₽`);
+
+    for (const order of weekOrders) {
+      const date = formatDate(new Date(order.created_at).getTime());
+      const profit = Math.floor(order.price * PROFIT_RATE);
+      lines.push(
+        `  ${date}  ${order.service_name}  <b>${order.price.toLocaleString('ru-RU')} ₽</b>  → ${profit.toLocaleString('ru-RU')} ₽`
+      );
+    }
+    lines.push('');
+  }
+
+  const text = lines.join('\n');
+
+  try {
+    await fetch(`https://api.telegram.org/bot${MASTERS_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📱 Открыть кабинет', web_app: { url: 'https://broverse-masters.vercel.app' } }],
+          ],
+        },
+      }),
+    });
+  } catch (err) {
+    console.error('[masters-bot] Failed to send history report:', err);
   }
 }
