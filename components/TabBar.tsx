@@ -1,8 +1,8 @@
 'use client';
 
-import { User, ClipboardList, Map } from 'lucide-react';
+import { User, ClipboardList, Map, History } from 'lucide-react';
 
-export type TabId = 'map' | 'orders' | 'profile';
+export type TabId = 'map' | 'orders' | 'profile' | 'history';
 
 interface TabBarProps {
   active: TabId;
@@ -16,6 +16,7 @@ export default function TabBar({ active, onChange }: TabBarProps) {
         {[
           { id: 'map' as TabId, label: 'Карта', icon: Map },
           { id: 'orders' as TabId, label: 'Заказы', icon: ClipboardList },
+          { id: 'history' as TabId, label: 'История', icon: History },
           { id: 'profile' as TabId, label: 'Профиль', icon: User },
         ].map(({ id, label, icon: Icon }) => {
           const isActive = active === id;

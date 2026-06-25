@@ -7,6 +7,7 @@ import DailyEarnings from '../components/DailyEarnings';
 import ShiftToggle from '../components/ShiftToggle';
 import OrderBar from '../components/OrderBar';
 import Orders from '../components/Orders';
+import OrderHistory from '../components/OrderHistory';
 import TabBar, { type TabId } from '../components/TabBar';
 import { LeadsProvider, useLeads, SOURCE_COLORS } from '@/lib/leads-context';
 
@@ -172,7 +173,7 @@ function ProfileScreen() {
     <div className="absolute inset-x-0 bottom-14 top-0 z-20 overflow-y-auto bg-gradient-to-b from-[#F2F2F7] via-[#E8E8ED] to-[#F2F2F7]">
       <div className="px-4 pb-28 pt-20">
         {/* Прогресс заполнения */}
-        <section className="mb-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-4 shadow-[0_4px_16px_rgba(0,0,0,0.03)] backdrop-blur-3xl">
+        <section className="mb-4 overflow-hidden rounded-[20px] border border-white/60 bg-white/50 p-4 shadow-[0_4px_16px_rgba(0,0,0,0.03)] backdrop-blur-xl">
           <div className="mb-2 flex items-center justify-between">
             <p className="text-[12px] font-bold text-[#8E8E93]">Заполненность профиля</p>
             <p className="text-[12px] font-bold text-[#007AFF]">{completionPercent}%</p>
@@ -191,14 +192,14 @@ function ProfileScreen() {
         </section>
 
         {/* Hero Card */}
-        <section className="relative overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] backdrop-blur-3xl">
+        <section className="relative overflow-hidden rounded-[28px] border border-white/60 bg-white/50 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl">
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gradient-to-br from-[#007AFF]/20 to-[#5856D6]/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-gradient-to-tr from-[#34C759]/15 to-[#30D158]/10 blur-2xl" />
           <div className="relative flex items-center gap-5">
             <button
               type="button"
               onClick={handlePhotoClick}
-              className="group relative flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-[40px] bg-gradient-to-br from-[#1C1C1E] to-[#3A3A3C] text-[36px] font-bold text-white shadow-lg active:scale-95 transition-transform"
+              className="group relative flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-[28px] bg-gradient-to-br from-[#1C1C1E] to-[#3A3A3C] text-[36px] font-bold text-white shadow-lg active:scale-95 transition-transform"
             >
               {photo ? (
                 <img src={photo} alt="Фото профиля" className="h-full w-full object-cover" />
@@ -256,7 +257,7 @@ function ProfileScreen() {
         </section>
 
         {/* Рейтинг */}
-        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
+        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#FF9500]/10">
@@ -282,7 +283,7 @@ function ProfileScreen() {
         </section>
 
         {/* Bio */}
-        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
+        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[#8E8E93]">О себе</h2>
             <button
@@ -317,7 +318,7 @@ function ProfileScreen() {
         </section>
 
         {/* Опыт работы */}
-        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
+        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[#8E8E93]">Стаж работы</h2>
             <button
@@ -354,7 +355,7 @@ function ProfileScreen() {
         </section>
 
         {/* Самозанятый */}
-        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
+        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[#8E8E93]">Самозанятый</h2>
             <button
@@ -435,7 +436,7 @@ function ProfileScreen() {
         </section>
 
         {/* Реквизиты для оплаты */}
-        <section className="mt-4 overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-3xl">
+        <section className="mt-4 overflow-hidden rounded-[24px] border border-white/60 bg-white/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[#8E8E93]">Реквизиты для оплаты</h2>
             <button
@@ -554,10 +555,20 @@ function Home() {
       {/* ЗАКАЗЫ (bottom sheet) */}
       {activeTab === 'orders' && (
         <div className="absolute inset-x-0 bottom-14 top-[40%] z-20 overflow-y-auto rounded-t-[32px] bg-[#F2F2F7] shadow-[0_-12px_40px_rgba(0,0,0,0.15)]">
-          <div className="sticky top-0 z-10 flex justify-center pt-3 pb-2 bg-[#F2F2F7]/90 backdrop-blur-3xl rounded-t-[32px]">
+          <div className="sticky top-0 z-10 flex justify-center pt-3 pb-2 bg-[#F2F2F7]/90 backdrop-blur-xl rounded-t-[32px]">
             <div className="h-1 w-10 rounded-full bg-zinc-300" />
           </div>
           <Orders />
+        </div>
+      )}
+
+      {/* ИСТОРИЯ (bottom sheet) */}
+      {activeTab === 'history' && (
+        <div className="absolute inset-x-0 bottom-14 top-[40%] z-20 overflow-y-auto rounded-t-[32px] bg-[#F2F2F7] shadow-[0_-12px_40px_rgba(0,0,0,0.15)]">
+          <div className="sticky top-0 z-10 flex justify-center pt-3 pb-2 bg-[#F2F2F7]/90 backdrop-blur-xl rounded-t-[32px]">
+            <div className="h-1 w-10 rounded-full bg-zinc-300" />
+          </div>
+          <OrderHistory />
         </div>
       )}
 
