@@ -3,9 +3,9 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+function getSupabase() {
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+}
 
 export type LeadSource = 'BroWash' | 'BroMove' | 'BroFrame' | 'BroBuild' | 'BroRent' | 'BroCare';
 
@@ -89,7 +89,7 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
 
     async function init() {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabase()
           .from('orders')
           .select('*')
           .order('created_at', { ascending: false })
@@ -106,7 +106,7 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
 
     init();
 
-    const channel = supabase
+    const channel = getSupabase()
       .channel('leads-realtime')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
         if (!cancelled) setLeads((prev) => [dbRowToLead(payload.new as Record<string, unknown>), ...prev]);
@@ -133,7 +133,7 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status: 'accepted' } : l)));
     const lead = leads.find((l) => l.id === id);
     if (lead) {
-      supabase.from('orders').update({ status: 'accepted' }).eq('id', String(id));
+      getSupabase().from('orders').update({ status: 'accepted' }).eq('id', String(id));
       setActiveLead(lead);
     }
   }, [leads]);
@@ -141,7 +141,7 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
   const completeLead = useCallback(() => {
     if (activeLead) {
       setLeads((prev) => prev.map((l) => (l.id === activeLead.id ? { ...l, status: 'completed' } : l)));
-      supabase.from('orders').update({ status: 'completed' }).eq('id', String(activeLead.id));
+      getSupabase().from('orders').update({ status: 'completed' }).eq('id', String(activeLead.id));
       setActiveLead(null);
     }
   }, [activeLead]);

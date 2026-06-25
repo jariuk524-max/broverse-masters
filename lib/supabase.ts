@@ -1,11 +1,22 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+let _supabase: SupabaseClient | null = null;
+let _supabaseAdmin: SupabaseClient | null = null;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+function lazySupabase(): SupabaseClient {
+  if (!_supabase) {
+    _supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+  }
+  return _supabase;
+}
 
-export const supabaseAdmin = supabaseServiceKey
-  ? createClient(supabaseUrl, supabaseServiceKey)
-  : supabase;
+function lazySupabaseAdmin(): SupabaseClient {
+  if (!_supabaseAdmin) {
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    _supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key);
+  }
+  return _supabaseAdmin;
+}
+
+export const supabase = new Proxy({} as SupabaseClient, { get: (_, p) => (lazySupabase() as any)[p] });
+export const supabaseAdmin = new Proxy({} as SupabaseClient, { get: (_, p) => (lazySupabaseAdmin() as any)[p] });
